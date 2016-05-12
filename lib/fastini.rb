@@ -1,5 +1,5 @@
 require "fastini/version"
+require "fastini/fastini"
 
 module Fastini
-  # Your code goes here...
 end

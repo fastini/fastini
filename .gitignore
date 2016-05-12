@@ -8,3 +8,9 @@
 /spec/reports/
 /tmp/
 .ruby-version
+*.bundle
+.DS_Store
+*.swp
+lib/*.so
+pkg
+tmp/*
