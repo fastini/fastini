@@ -11,29 +11,47 @@ VALUE fastini_load(VALUE mod, VALUE str) {
   VALUE result = rb_hash_new();
 
   char *str_p = StringValueCStr(str);
-  char *section = NULL;
+  VALUE current_section = Qnil;
   char *line = strtok(str_p, "\n");
 
   while(line != NULL) {
     char *sanitized_line = lstrip(rstrip(line));
 
-    // Ignoring comments and empty lines.
     if(is_comment(line)) {
       line = strtok(NULL, "\n");
       continue;
     }
 
-    // Start of a section
     if(*sanitized_line == '[') {
       char *section_end = strchr(sanitized_line, ']');
 
       if (section_end != NULL) {
         *section_end = '\0';
-        VALUE section_key = rb_str_new2(sanitized_line + 1);
-        rb_hash_aset(result, section_key, rb_hash_new());
+        current_section = rb_str_new2(sanitized_line + 1);
+        rb_hash_aset(result, current_section, rb_hash_new());
       } else {
         rb_raise(rb_eSyntaxError, "section must have an end");
       }
+    } else {
+      char *assign = strchr(sanitized_line, '=');
+
+      if (assign != NULL) {
+        *assign = '\0';
+        VALUE key = rb_str_new2(sanitized_line);
+
+        // TODO: Check type and convert. For now only strings are created.
+        VALUE value = rb_str_new2(assign + 1);
+
+        if (NIL_P(current_section)) {
+          rb_hash_aset(result, key, value);
+        } else {
+          VALUE section_hash = rb_hash_aref(result, current_section);
+          rb_hash_aset(section_hash, key, value);
+        }
+      } else {
+        rb_raise(rb_eSyntaxError, "values must be assigned with the '=' symbol");
+      }
+
     }
 
     line = strtok(NULL, "\n");
