@@ -44,7 +44,7 @@ void generate_section(VALUE key, VALUE str) {
 int hash_to_ini(VALUE key, VALUE value, VALUE str) {
   key = to_s(key);
 
-  if (rb_obj_is_instance_of(value, rb_cHash) == Qtrue) {
+  if (RB_TYPE_P(value, T_HASH)) {
     generate_section(key, str);
     rb_hash_foreach(value, hash_to_ini, str);
   } else {

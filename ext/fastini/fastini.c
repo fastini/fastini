@@ -64,7 +64,7 @@ VALUE fastini_load(VALUE mod, VALUE str) {
 VALUE fastini_dump(VALUE mod, VALUE hash) {
   VALUE result = rb_str_new2("") ;
 
-  if (rb_obj_is_instance_of(hash, rb_cHash) != Qtrue) {
+  if (!RB_TYPE_P(hash, T_HASH)) {
     rb_raise(rb_eTypeError, "argument must be a Hash");
   }
 
