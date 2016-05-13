@@ -49,4 +49,17 @@ class FastiniTest < Minitest::Test
     expected = {'no_section' => '1', 'foo' => {'a' => '1'}}
     assert_equal expected, Fastini.load("no_section=1\n[foo]\na=1")
   end
+
+  def test_dump_method_expects_a_hash
+    e = assert_raises TypeError do
+      Fastini.dump(nil)
+    end
+
+    error_message = 'argument must be a Hash'
+    assert_equal error_message, e.message
+  end
+
+  def test_dump_method_returns_a_string
+    assert_equal "a=1\n\n[b]\nc=2\n", Fastini.dump({a: 1, b: {c: 2}})
+  end
 end

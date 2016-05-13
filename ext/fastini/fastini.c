@@ -5,6 +5,7 @@ VALUE mFastini;
 void Init_fastini(void) {
   mFastini = rb_define_module("Fastini");
   rb_define_singleton_method(mFastini, "load", fastini_load, 1);
+  rb_define_singleton_method(mFastini, "dump", fastini_dump, 1);
 }
 
 VALUE fastini_load(VALUE mod, VALUE str) {
@@ -55,6 +56,19 @@ VALUE fastini_load(VALUE mod, VALUE str) {
 
     line = strtok(NULL, "\n");
   }
+
+  return result;
+}
+
+
+VALUE fastini_dump(VALUE mod, VALUE hash) {
+  VALUE result = rb_str_new2("") ;
+
+  if (rb_obj_is_instance_of(hash, rb_cHash) != Qtrue) {
+    rb_raise(rb_eTypeError, "argument must be a Hash");
+  }
+
+  rb_hash_foreach(hash, hash_to_ini, result);
 
   return result;
 }
