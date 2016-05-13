@@ -17,3 +17,7 @@ char * lstrip(char *str) {
 
   return str;
 }
+
+int is_comment(char *str) {
+  return (!*str || *str == ';' || *str == '#');
+}
