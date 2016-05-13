@@ -1,2 +1,3 @@
 require 'mkmf'
-create_makefile('fastini/fastini')
+dir_config 'fastini'
+create_makefile 'fastini'

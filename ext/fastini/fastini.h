@@ -2,7 +2,11 @@
 #define _FASTINI
 
 #include <ruby.h>
+#include <string.h>
+#include "utils.h"
 
 extern VALUE mFastini;
+
+VALUE fastini_load(VALUE mod, VALUE str);
 
 #endif
