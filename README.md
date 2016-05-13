@@ -20,7 +20,27 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+For now only two methods are implemented with a limited set of INI
+configuration.
+
+```ruby
+Fastini.load("[foo]\na=1\n[bar]\nb=2")
+{'foo' => {'a' => '1'}, 'bar'=> {'b' => '2'}}
+
+Fastini.dump({foo: 1, bar: {c: 2}})
+"foo=1\n\n[bar]\nc=2\n"
+```
+
+### What is accepted for now?
+
+- Comments with `#` or `;` (but not inline comments)
+- Sections
+- Simple assignments
+
+### What is planned for the next version?
+
+- Multiline assignments (value in multiple lines with the `\` separator)
+- Repeated keys generating an array of values
 
 ## Development
 
