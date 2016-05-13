@@ -35,9 +35,14 @@ class FastiniTest < Minitest::Test
     assert_equal expected, Fastini.load('')
   end
 
-  def test_load_method_can_parse_multiple_sections
+  def test_load_method_can_parse_sections
     expected = {'foo' => {'a' => '1'}, 'bar'=> {'b' => '2'}}
     assert_equal expected, Fastini.load("[foo]\na=1\r\n[bar]\nb=2")
+  end
+
+  def test_load_method_ignores_comments
+    expected = {'foo' => {'a' => '1'}}
+    assert_equal expected, Fastini.load(";cool comment\n[foo]\na=1")
   end
 
   def test_load_method_parse_values_without_a_section

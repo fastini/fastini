@@ -17,7 +17,7 @@ VALUE fastini_load(VALUE mod, VALUE str) {
   while(line != NULL) {
     char *sanitized_line = lstrip(rstrip(line));
 
-    if(is_comment(line)) {
+    if(is_comment(sanitized_line)) {
       line = strtok(NULL, "\n");
       continue;
     }
@@ -51,7 +51,6 @@ VALUE fastini_load(VALUE mod, VALUE str) {
       } else {
         rb_raise(rb_eSyntaxError, "values must be assigned with the '=' symbol");
       }
-
     }
 
     line = strtok(NULL, "\n");
