@@ -11,6 +11,7 @@ void Init_fastini(void) {
 VALUE fastini_load(VALUE mod, VALUE str) {
   VALUE result = rb_hash_new();
 
+
   char *str_p = StringValueCStr(str);
   VALUE current_section = Qnil;
   char *line = strtok(str_p, "\n");
@@ -62,7 +63,7 @@ VALUE fastini_load(VALUE mod, VALUE str) {
 
 
 VALUE fastini_dump(VALUE mod, VALUE hash) {
-  VALUE result = rb_str_new2("") ;
+  VALUE result = rb_utf8_str_new_cstr("");
 
   if (!RB_TYPE_P(hash, T_HASH)) {
     rb_raise(rb_eTypeError, "argument must be a Hash");

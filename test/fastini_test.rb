@@ -59,7 +59,8 @@ class FastiniTest < Minitest::Test
     assert_equal error_message, e.message
   end
 
-  def test_dump_method_returns_a_string
+  def test_dump_method_returns_an_utf8_string
     assert_equal "a=1\n\n[b]\nc=2\n", Fastini.dump({a: 1, b: {c: 2}})
+    assert_equal 'UTF-8', Fastini.dump({a: 1, b: {c: 2}}).encoding.to_s
   end
 end
