@@ -9,7 +9,6 @@ Add this line to your application's Gemfile:
 ```ruby
 gem 'fastini'
 ```
-
 And then execute:
 
     $ bundle
@@ -20,11 +19,14 @@ Or install it yourself as:
 
 ## Usage
 
-For now only two methods are implemented with a limited set of INI
+For now only three methods are implemented with a limited set of INI
 configuration.
 
 ```ruby
 Fastini.load("[foo]\na=1\n[bar]\nb=2")
+{'foo' => {'a' => '1'}, 'bar'=> {'b' => '2'}}
+
+Fastini.load_file('my_file.ini')
 {'foo' => {'a' => '1'}, 'bar'=> {'b' => '2'}}
 
 Fastini.dump({foo: 1, bar: {c: 2}})
@@ -37,8 +39,9 @@ Fastini.dump({foo: 1, bar: {c: 2}})
 - Sections
 - Simple assignments
 
-### What is planned for the next version?
+### What is planned for next releases?
 
+- The `dump_file` method, with similar functionality as the `dump` method.
 - Multiline assignments (value in multiple lines with the `\` separator)
 - Repeated keys generating an array of values
 
@@ -51,7 +54,6 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/fastini. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
-
 
 ## License
 
