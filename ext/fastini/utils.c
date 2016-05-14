@@ -22,6 +22,10 @@ int is_comment(char *str) {
   return (!*str || *str == ';' || *str == '#');
 }
 
+int is_section(char *str) {
+  return (*str == '[');
+}
+
 VALUE to_s(VALUE value) {
   return rb_convert_type(value, T_STRING, "String", "to_s");
 }

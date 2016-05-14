@@ -50,6 +50,20 @@ class FastiniTest < Minitest::Test
     assert_equal expected, Fastini.load("no_section=1\n[foo]\na=1")
   end
 
+  def test_load_file_method_with_valid_path
+    expected = {'no_section' => '1', 'foo' => {'a' => '2'}, 'bar'=>{'b' => '3'}}
+    assert_equal expected, Fastini.load_file('./test/load_file.in')
+  end
+
+  def test_load_file_method_with_invalid_path
+    e = assert_raises StandardError do
+      Fastini.load_file('no_file')
+    end
+
+    error_message = 'file not found'
+    assert_equal error_message, e.message
+  end
+
   def test_dump_method_expects_a_hash
     e = assert_raises TypeError do
       Fastini.dump(nil)

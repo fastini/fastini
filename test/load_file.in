@@ -1,0 +1,8 @@
+no_section=1
+
+# Important section
+[foo]
+a=2
+
+[bar]
+b=3

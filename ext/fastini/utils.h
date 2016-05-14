@@ -9,6 +9,7 @@ char * rstrip(char *str);
 char * lstrip(char *str);
 
 int is_comment(char *str);
+int is_section(char *str);
 
 int hash_to_ini(VALUE key, VALUE value, VALUE str);
 

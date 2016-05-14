@@ -5,15 +5,15 @@ VALUE mFastini;
 void Init_fastini(void) {
   mFastini = rb_define_module("Fastini");
   rb_define_singleton_method(mFastini, "load", fastini_load, 1);
+  rb_define_singleton_method(mFastini, "load_file", fastini_load_file, 1);
   rb_define_singleton_method(mFastini, "dump", fastini_dump, 1);
 }
 
 VALUE fastini_load(VALUE mod, VALUE str) {
   VALUE result = rb_hash_new();
-
+  VALUE current_section = Qnil;
 
   char *str_p = StringValueCStr(str);
-  VALUE current_section = Qnil;
   char *line = strtok(str_p, "\n");
 
   while(line != NULL) {
@@ -24,35 +24,10 @@ VALUE fastini_load(VALUE mod, VALUE str) {
       continue;
     }
 
-    if(*sanitized_line == '[') {
-      char *section_end = strchr(sanitized_line, ']');
-
-      if (section_end != NULL) {
-        *section_end = '\0';
-        current_section = rb_str_new2(sanitized_line + 1);
-        rb_hash_aset(result, current_section, rb_hash_new());
-      } else {
-        rb_raise(rb_eSyntaxError, "section must have an end");
-      }
+    if(is_section(sanitized_line)) {
+      current_section = parse_section(sanitized_line, result);
     } else {
-      char *assign = strchr(sanitized_line, '=');
-
-      if (assign != NULL) {
-        *assign = '\0';
-        VALUE key = rb_str_new2(sanitized_line);
-
-        // TODO: Check type and convert. For now only strings are created.
-        VALUE value = rb_str_new2(assign + 1);
-
-        if (NIL_P(current_section)) {
-          rb_hash_aset(result, key, value);
-        } else {
-          VALUE section_hash = rb_hash_aref(result, current_section);
-          rb_hash_aset(section_hash, key, value);
-        }
-      } else {
-        rb_raise(rb_eSyntaxError, "values must be assigned with the '=' symbol");
-      }
+      parse_assignment(sanitized_line, current_section, result);
     }
 
     line = strtok(NULL, "\n");
@@ -61,6 +36,36 @@ VALUE fastini_load(VALUE mod, VALUE str) {
   return result;
 }
 
+VALUE fastini_load_file(VALUE mod, VALUE filename) {
+  VALUE result = rb_hash_new();
+  VALUE current_section = Qnil;
+
+  char *path = StringValueCStr(filename);
+  FILE* file = fopen(path, "r");
+  char line[LINE_LENGTH];
+
+  if (!file) {
+    rb_raise(rb_eStandardError, "file not found");
+  }
+
+  while (fgets(line, sizeof(line), file)) {
+    char *sanitized_line = lstrip(rstrip(line));
+
+    if(is_comment(sanitized_line)) {
+      continue;
+    }
+
+    if(is_section(sanitized_line)) {
+      current_section = parse_section(sanitized_line, result);
+    } else {
+      parse_assignment(sanitized_line, current_section, result);
+    }
+  }
+
+  fclose(file);
+
+  return result;
+}
 
 VALUE fastini_dump(VALUE mod, VALUE hash) {
   VALUE result = rb_utf8_str_new_cstr("");
@@ -72,4 +77,40 @@ VALUE fastini_dump(VALUE mod, VALUE hash) {
   rb_hash_foreach(hash, hash_to_ini, result);
 
   return result;
+}
+
+VALUE parse_section(char *line, VALUE result) {
+  VALUE section_name = Qnil;
+  char *section_end = strchr(line, ']');
+
+  if (section_end != NULL) {
+    *section_end = '\0';
+    section_name = rb_str_new2(line + 1);
+    rb_hash_aset(result, section_name, rb_hash_new());
+  } else {
+    rb_raise(rb_eSyntaxError, "section must have an end");
+  }
+
+  return section_name;
+}
+
+void parse_assignment(char *line, VALUE current_section, VALUE result) {
+  char *assign = strchr(line, '=');
+
+  if (assign != NULL) {
+    *assign = '\0';
+    VALUE key = rb_str_new2(line);
+
+    // TODO: Check type and convert. For now only strings are created.
+    VALUE value = rb_str_new2(assign + 1);
+
+    if (NIL_P(current_section)) {
+      rb_hash_aset(result, key, value);
+    } else {
+      VALUE section_hash = rb_hash_aref(result, current_section);
+      rb_hash_aset(section_hash, key, value);
+    }
+  } else {
+    rb_raise(rb_eSyntaxError, "values must be assigned with the '=' symbol");
+  }
 }
