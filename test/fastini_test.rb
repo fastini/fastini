@@ -73,8 +73,33 @@ class FastiniTest < Minitest::Test
     assert_equal error_message, e.message
   end
 
-  def test_dump_method_returns_an_utf8_string
+  def test_dump_method_returns_an_utf8_string_with_ini_format
     assert_equal "a=1\n\n[b]\nc=2\n", Fastini.dump({a: 1, b: {c: 2}})
     assert_equal 'UTF-8', Fastini.dump({a: 1, b: {c: 2}}).encoding.to_s
+  end
+
+  def test_dump_file_method_expects_a_hash
+    e = assert_raises TypeError do
+      Fastini.dump_file(nil, 'my_file_path')
+    end
+
+    error_message = 'argument must be a Hash'
+    assert_equal error_message, e.message
+  end
+
+  def test_dump_file_method_with_invalid_path
+    e = assert_raises StandardError do
+      Fastini.dump_file({a: 1}, './invalid_path/dump_file.out')
+    end
+
+    error_message = 'invalid file path'
+    assert_equal error_message, e.message
+  end
+
+  def test_dump_file_method_generates_a_file_with_ini_format
+    file_path = './test/dump_file.out'
+    Fastini.dump_file({a: 1, b: {c: 2}}, file_path)
+    assert_equal "a=1\n\n[b]\nc=2\n", File.read(file_path)
+    File.delete(file_path)
   end
 end

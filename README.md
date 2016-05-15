@@ -19,7 +19,7 @@ Or install it yourself as:
 
 ## Usage
 
-For now only three methods are implemented with a limited set of INI
+For now only four methods are implemented with a limited set of INI
 configuration.
 
 ```ruby
@@ -31,6 +31,10 @@ Fastini.load_file('my_file.ini')
 
 Fastini.dump({foo: 1, bar: {c: 2}})
 "foo=1\n\n[bar]\nc=2\n"
+
+Fastini.dump_file({foo: 1, bar: {c: 2}}, 'my_file.out')
+$ cat my_file.out
+"foo=1\n\n[bar]\nc=2\n"
 ```
 
 ### What is accepted for now?
@@ -41,7 +45,6 @@ Fastini.dump({foo: 1, bar: {c: 2}})
 
 ### What is planned for next releases?
 
-- The `dump_file` method, with similar functionality as the `dump` method.
 - Multiline assignments (value in multiple lines with the `\` separator)
 - Repeated keys generating an array of values
 

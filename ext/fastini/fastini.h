@@ -16,5 +16,6 @@ VALUE parse_section(char *line, VALUE result);
 void parse_assignment(char *line, VALUE current_section, VALUE result);
 
 VALUE fastini_dump(VALUE mod, VALUE hash);
+VALUE fastini_dump_file(VALUE mod, VALUE hash, VALUE filename);
 
 #endif

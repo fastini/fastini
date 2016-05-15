@@ -7,6 +7,7 @@ void Init_fastini(void) {
   rb_define_singleton_method(mFastini, "load", fastini_load, 1);
   rb_define_singleton_method(mFastini, "load_file", fastini_load_file, 1);
   rb_define_singleton_method(mFastini, "dump", fastini_dump, 1);
+  rb_define_singleton_method(mFastini, "dump_file", fastini_dump_file, 2);
 }
 
 VALUE fastini_load(VALUE mod, VALUE str) {
@@ -69,15 +70,37 @@ VALUE fastini_load_file(VALUE mod, VALUE filename) {
 }
 
 VALUE fastini_dump(VALUE mod, VALUE hash) {
-  VALUE result = rb_utf8_str_new_cstr("");
-
   if (!RB_TYPE_P(hash, T_HASH)) {
     rb_raise(rb_eTypeError, "argument must be a Hash");
   }
 
+  VALUE result = rb_utf8_str_new_cstr("");
   rb_hash_foreach(hash, hash_to_ini, result);
 
   return result;
+}
+
+VALUE fastini_dump_file(VALUE mod, VALUE hash, VALUE filename) {
+  if (!RB_TYPE_P(hash, T_HASH)) {
+    rb_raise(rb_eTypeError, "argument must be a Hash");
+  }
+
+  VALUE result = rb_utf8_str_new_cstr("");
+  char *result_str = NULL;
+  char *path = StringValueCStr(filename);
+  FILE* file = fopen(path, "w");
+
+  if (!file) {
+    rb_raise(rb_eStandardError, "invalid file path");
+  }
+
+  rb_hash_foreach(hash, hash_to_ini, result);
+  result_str = StringValueCStr(result);
+
+  fputs(result_str, file);
+  fclose(file);
+
+  return Qtrue;
 }
 
 VALUE parse_section(char *line, VALUE result) {
