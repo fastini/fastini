@@ -14,13 +14,14 @@ VALUE fastini_load(VALUE mod, VALUE str) {
   VALUE current_section = Qnil;
 
   char *str_p = StringValueCStr(str);
-  char *line = strtok(str_p, "\n");
+  char *strtok_context = NULL;
+  char *line = strtok_r(str_p, "\n", &strtok_context);
 
   while(line != NULL) {
     char *sanitized_line = lstrip(rstrip(line));
 
     if(is_comment(sanitized_line)) {
-      line = strtok(NULL, "\n");
+      line = strtok_r(NULL, "\n", &strtok_context);
       continue;
     }
 
@@ -30,7 +31,7 @@ VALUE fastini_load(VALUE mod, VALUE str) {
       parse_assignment(sanitized_line, current_section, result);
     }
 
-    line = strtok(NULL, "\n");
+    line = strtok_r(NULL, "\n", &strtok_context);
   }
 
   return result;
