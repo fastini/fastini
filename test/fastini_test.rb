@@ -74,8 +74,9 @@ class FastiniTest < Minitest::Test
   end
 
   def test_dump_method_returns_an_utf8_string_with_ini_format
-    assert_equal "a=1\n\n[b]\nc=2\n", Fastini.dump({a: 1, b: {c: 2}})
-    assert_equal 'UTF-8', Fastini.dump({a: 1, b: {c: 2}}).encoding.to_s
+    dump = Fastini.dump({a: 1, b: {c: 2}})
+    assert_equal "a=1\n\n[b]\nc=2\n", dump
+    assert_equal 'UTF-8', dump.encoding.to_s
   end
 
   def test_dump_file_method_expects_a_hash
