@@ -52,7 +52,7 @@ class FastiniTest < Minitest::Test
 
   def test_load_file_method_with_valid_path
     expected = {'no_section' => '1', 'foo' => {'a' => '2'}, 'bar'=>{'b' => '3'}}
-    assert_equal expected, Fastini.load_file('./test/load_file.in')
+    assert_equal expected, Fastini.load_file('./test/samples/simple.ini')
   end
 
   def test_load_file_method_with_invalid_path
@@ -98,9 +98,10 @@ class FastiniTest < Minitest::Test
   end
 
   def test_dump_file_method_generates_a_file_with_ini_format
-    file_path = './test/dump_file.out'
+    file_path = './tmp/dump_file.out'
     Fastini.dump_file({a: 1, b: {c: 2}}, file_path)
     assert_equal "a=1\n\n[b]\nc=2\n", File.read(file_path)
+  ensure
     File.delete(file_path)
   end
 end
